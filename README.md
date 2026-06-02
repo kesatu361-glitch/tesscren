@@ -1,0 +1,1 @@
+# Crypto Screener Bot\n\nUpload ke GitHub lalu deploy ke Railway.\n
