@@ -1,42 +1,20 @@
 import time
-from dotenv import load_dotenv
-from scanner import bybit, get_pairs, analyze
+
+from scanner import get_trending_tokens
 from discord_webhook import send_discord
 
-load_dotenv()
-
-def scan_exchange(exchange):
-    results = []
-    pairs = get_pairs(exchange)
-
-    for symbol in pairs[:150]:
-        data = analyze(exchange, symbol)
-        if data:
-            results.append(data)
-
-    return results
-
 while True:
+
     try:
-        data = []
 
-        # Binance dimatikan karena Railway kena blok region
-        data.extend(scan_exchange(bybit))
+        tokens = get_trending_tokens()
 
-        top = sorted(
-            data,
-            key=lambda x: x["score"],
-            reverse=True
-        )[:10]
+        msg = "🔥 TRENDING TOKENS (CoinGecko)\n\n"
 
-        msg = "🔥 TOP 10 TOKEN PANAS\n\n"
+        for i, coin in enumerate(tokens[:10], 1):
 
-        for i, coin in enumerate(top, 1):
             msg += (
-                f"{i}. {coin['symbol']}\n"
-                f"Score: {coin['score']}/10\n"
-                f"Price: {coin['price']}\n"
-                f"RSI: {coin['rsi']}\n\n"
+                f"{i}. {coin['name']} ({coin['symbol']})\n"
             )
 
         send_discord(msg)
@@ -44,6 +22,7 @@ while True:
         print("sent")
 
     except Exception as e:
+
         print("ERROR:", e)
 
     time.sleep(300)
