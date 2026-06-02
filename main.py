@@ -1,6 +1,6 @@
 import time
 from dotenv import load_dotenv
-from scanner import binance, bybit, get_pairs, analyze
+from scanner import bybit, get_pairs, analyze
 from discord_webhook import send_discord
 
 load_dotenv()
@@ -19,10 +19,15 @@ def scan_exchange(exchange):
 while True:
     try:
         data = []
-        data.extend(scan_exchange(binance))
+
+        # Binance dimatikan karena Railway kena blok region
         data.extend(scan_exchange(bybit))
 
-        top = sorted(data, key=lambda x: x["score"], reverse=True)[:10]
+        top = sorted(
+            data,
+            key=lambda x: x["score"],
+            reverse=True
+        )[:10]
 
         msg = "🔥 TOP 10 TOKEN PANAS\n\n"
 
@@ -35,9 +40,10 @@ while True:
             )
 
         send_discord(msg)
+
         print("sent")
 
     except Exception as e:
-        print(e)
+        print("ERROR:", e)
 
     time.sleep(300)
